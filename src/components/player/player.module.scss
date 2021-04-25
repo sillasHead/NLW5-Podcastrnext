@@ -24,8 +24,9 @@
 
   footer {
     align-self: stretch; //§ faz ocupar toda a largura do footer
-    
-    &.empty { //§ & - 'quando' footer estiver com a estilizacao empty
+
+    &.empty {
+      //§ & - 'quando' footer estiver com a estilizacao empty
       opacity: 0.5;
     }
   }
@@ -36,7 +37,11 @@
   height: 20rem;
   border: 1.5px dashed var(--purple-300); //§ dashed borda pontilhada
   border-radius: 1.5rem;
-  background: linear-gradient(143.8deg, rgba(145, 100, 250, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(
+    143.8deg,
+    rgba(145, 100, 250, 0.8) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
 
   padding: 4rem;
   text-align: center;
