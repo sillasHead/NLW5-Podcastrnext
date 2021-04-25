@@ -1,26 +1,143 @@
-// SPA Single Page Application 
-// SSR Server Side Rendering
-// SSG Static Site Generator
+import { GetStaticProps } from 'next';
+import Image from 'next/image'; //§Image componente do next onde posso definir um tamanho especifico ao carregar uma imagem
+import { format, parseISO } from 'date-fns';
+import { api } from '../services/api';
+import ptBR from 'date-fns/locale/pt-BR';
+import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
 
-//§ utilizando SSG
-export default function Home(props) {
-  console.log(props.episodes);
-  
-  return (
-    <div>
-      <h1>Index</h1>
-      <p>{JSON.stringify(props.episodes)}</p>
-    </div>
-  )
+import styles from './home.module.scss';
+
+type Episode = {
+  id: string;
+  title: string;
+  thumbnail: string;
+  members: string;
+  publishedAt: string;
+  duration: number;
+  durationAsString: string;
+  description: string;
+  url: string;
 }
 
-export async function getStaticProps() { //§ o primeiro carregamento desse componente eh feito pela camada do next (servidor node)
-  const response = await fetch('http://localhost:3333/episodes'); //§ chamada API
-  const data = await response.json(); //§ convertendo resposta em json
+type HomeProps = {
+  latestEpisodes: Episode[];
+  allEpisodes: Episode[];
+}
+
+//§ utilizando SSG
+export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
+  console.log(latestEpisodes)
+  return (
+    <div className={styles['homepage']}>
+      <section className={styles['latest-episodes']}>
+        <h2>Últimos lançamentos</h2>
+
+        <ul>
+          {latestEpisodes.map(episode => { //§ diferente do foreach, o map tem retorno
+            return (
+              <li key={episode.id}> {/* §key identificacao para o react identificar os itens certos a serem modificados */}
+                <div style={{ width: 120 }}>
+                  <Image
+                    width={192}
+                    height={192}
+                    src={episode.thumbnail}
+                    alt={episode.title}
+                    objectFit="cover" //§ formatar imagem
+                  />
+                </div>
+
+                <div className={styles['episode-details']}>
+                  <a href="">{episode.title}</a>
+                  <p>{episode.members}</p>
+                  <span>{episode.publishedAt}</span>
+                  <span>{episode.durationAsString}</span>
+                </div>
+
+                <button type="button">
+                  <img src="/play-green.svg" alt="Tocar episódio" />
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <section className={styles['all-episodes']}>
+          <h2>Todos os episódios</h2>
+
+          <table cellSpacing={0}>
+            <thead>
+              <th></th>
+              <th>Podcast</th>
+              <th>Integrantes</th>
+              <th>Data</th>
+              <th>Duração</th>
+              <th></th>
+            </thead>
+            <tbody>
+              {allEpisodes.map(episode => {
+                return (
+                  <tr key={episode.id}>
+                    <td style={{ width: 85 }}>
+                      <Image
+                        width={120}
+                        height={120}
+                        src={episode.thumbnail}
+                        alt={episode.title}
+                        objectFit="cover"
+                      />
+                    </td>
+                    <td>
+                      <a href="">{episode.title}</a>
+                    </td>
+                    <td>{episode.members}</td>
+                    <td style={{ width: 150 }}>{episode.publishedAt}</td>
+                    <td>{episode.durationAsString}</td>
+                    <td>
+                      <button type="button">
+                        <img src="/play-green.svg" alt="Tocar episódios"/>
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+      </section>
+    </div>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async () => { //§ o primeiro carregamento desse componente eh feito pela camada do next (servidor node)
+  const { data } = await api.get('episodes', {
+    params: {
+      _limit: 12,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  }); //§ chamada API com limite de 12 por pagina ordenado pela ultima data de publicacao
+
+  const episodes = data.map(episode => {
+    return {
+      id: episode.id,
+      title: episode.title,
+      thumbnail: episode.thumbnail,
+      members: episode.members,
+      publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR }),
+      duration: Number(episode.file.duration),
+      durationAsString: convertDurationToTimeString(Number(episode.file.duration)),
+      description: episode.description,
+      url: episode.file.url,
+    };
+  });
+
+  const latestEpisodes = episodes.slice(0, 2);
+  const allEpisodes = episodes.slice(2, episodes.length);
 
   return {
     props: {
-      episodes: data,
+      latestEpisodes,
+      allEpisodes,
     },
     revalidate: 60 * 60 * 8, //§ faz uma requisicao ao servidor a cada 8 horas
   }
