@@ -73,9 +73,28 @@ export default function Episode({ episode }: EpisodeProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+//§ funcao necessaria sempre que a rota seja dinamica ex: episode/[episodes].tsx
+  const { data } = await api.get('episodes', {
+    params: {
+      _limit: 2,
+      _sort: 'published_at',
+      _order: 'desc',
+    }
+  });
+
+  const paths = data.map(episode => {
+    return {
+      params: {
+        slug: episode.id,
+      }
+    }
+  });
+
   return {
-    paths: [],
-    fallback: "blocking",
+    paths, //§ paginas que sempre estarao carregadas
+    fallback: "blocking", //§ permite que as demais paginas que nao foram carregadas
+    //ainda sejam carregadas, (pelo lado do servidor) no momento em que sao
+    //acessadas, e na finalizacao aparecam em tela
   };
 };
 
