@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticProps } from 'next';
-import useRouter from 'next/router';
+import Head from 'next/head';
 import Image from 'next/image'; //§Image componente do next onde posso definir um tamanho especifico ao carregar uma imagem
 import Link from 'next/link';
 import { usePlayer } from '../contexts/PlayerContext';
@@ -34,6 +34,10 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 
   return (
     <div className={styles["homepage"]}>
+      <Head> {/* §Head adicionando um cabecalho no html */}
+        <title>Home | Podcastr</title>
+      </Head>
+
       <section className={styles["latest-episodes"]}>
         <h2>Últimos lançamentos</h2>
 

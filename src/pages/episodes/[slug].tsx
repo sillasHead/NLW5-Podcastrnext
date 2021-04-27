@@ -8,6 +8,7 @@
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { GetStaticPaths, GetStaticProps } from "next";
+import Head from 'next/head';
 import Image from "next/image";
 import Link from "next/link";
 import { usePlayer } from "../../contexts/PlayerContext";
@@ -36,6 +37,10 @@ export default function Episode({ episode }: EpisodeProps) {
 
   return (
     <div className={styles['background']}>
+      <Head>
+        <title>{episode.title} | Podcastr</title>
+      </Head>
+
       <div className={styles["episode"]}>
         <div className={styles["thumbnail-container"]}>
           <Link href="/">
