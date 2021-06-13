@@ -67,3 +67,24 @@ h2 {
 button {
   cursor: pointer;
 }
+
+// personalizar a barra de rolagem em geral
+::-webkit-scrollbar {
+  width: 0.78rem;
+}
+
+// personalizar o fundo da barra de rolagem
+::-webkit-scrollbar-track {
+  background-color: var(--gray-100);
+}
+
+//a alça da barra, que demonstra a altura que você está na página
+::-webkit-scrollbar-thumb {
+  background: var(--gray-500);
+  border: 2.5px solid var(--gray-100);
+  border-radius: 10px;
+
+  &:hover {
+    background: var(--gray-200);
+  }
+}

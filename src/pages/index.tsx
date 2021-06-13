@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Image from 'next/image'; //§Image componente do next onde posso definir um tamanho especifico ao carregar uma imagem
 import Link from 'next/link';
 import { usePlayer } from '../contexts/PlayerContext';
-import { api, episodesOffline } from '../services/api';
+import { api, episodesServerOff } from '../services/api';
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
 import styles from './home.module.scss';
 
@@ -137,7 +137,7 @@ export const getStaticProps: GetStaticProps = async () => { //§ o primeiro carr
   }).then(response => {
     data = response.data;
   }).catch(() => {
-    data = episodesOffline;
+    data = episodesServerOff;
   });
 
   const episodes: Episode[] = data.map(episode => {
