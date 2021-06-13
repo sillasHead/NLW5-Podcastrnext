@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Image from 'next/image'; //§Image componente do next onde posso definir um tamanho especifico ao carregar uma imagem
 import Link from 'next/link';
 import { usePlayer } from '../contexts/PlayerContext';
-import { api } from '../services/api';
+import { api, episodesOffline } from '../services/api';
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
 import styles from './home.module.scss';
 
@@ -127,15 +127,20 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
 }
 
 export const getStaticProps: GetStaticProps = async () => { //§ o primeiro carregamento desse componente eh feito pela camada do next (servidor node)
-  const { data } = await api.get('episodes', {
+  let data;
+  await api.get('episodes', {
     params: {
       _limit: 12,
       _sort: 'published_at',
       _order: 'desc'
-    }
-  }); //§ chamada API com limite de 12 por pagina ordenado pela ultima data de publicacao
+    } //§ chamada API com limite de 12 por pagina ordenado pela ultima data de publicacao
+  }).then(response => {
+    data = response.data;
+  }).catch(() => {
+    data = episodesOffline;
+  });
 
-  const episodes = data.map(episode => {
+  const episodes: Episode[] = data.map(episode => {
     return {
       id: episode.id,
       title: episode.title,
