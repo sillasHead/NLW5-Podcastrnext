@@ -12,7 +12,7 @@ import Head from 'next/head';
 import Image from "next/image";
 import Link from "next/link";
 import { usePlayer } from "../../contexts/PlayerContext";
-import { api } from "../../services/api";
+import { api, episodesServerOff } from "../../services/api";
 import { convertDurationToTimeString } from "../../utils/convertDurationToTimeString";
 import styles from "./episode.module.scss";
 
@@ -81,13 +81,22 @@ export default function Episode({ episode }: EpisodeProps) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
 //§ funcao necessaria sempre que a rota seja dinamica ex: episode/[episodes].tsx
-  const { data } = await api.get('episodes', {
+  // const { data } = await api.get('episodes', {
+  //   params: {
+  //     _limit: 2,
+  //     _sort: 'published_at',
+  //     _order: 'desc',
+  //   }
+  // });
+  let data;
+  await api.get('episodes', {
     params: {
       _limit: 2,
       _sort: 'published_at',
       _order: 'desc',
     }
-  });
+  }).then(response => data = response.data)
+    .catch(() => data = episodesServerOff);
 
   const paths = data.map(episode => {
     return {
@@ -108,7 +117,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const { slug } = context.params;
 
-  const { data } = await api.get(`/episodes/${slug}`);
+  // const { data } = await api.get(`/episodes/${slug}`);
+  let data;
+  await api.get(`/episodes/${slug}`)
+    .then(response => data = response.data)
+    .catch(() => {
+      episodesServerOff.forEach(episode => {
+        if (episode.id === slug) {
+          data = episode;
+          return;
+        }
+      });
+    });
 
   const episode = {
     id: data.id,

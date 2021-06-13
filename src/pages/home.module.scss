@@ -2,7 +2,7 @@
   padding: 0 1rem;
   height: calc(100vh - 6.5rem);
   //§ tamanho todo que sobra da tela tirando o cabecalho
-  overflow-y: scroll; //§ scroll vertical
+  overflow-y: auto; //§ scroll vertical
 
   h2 {
     margin-top: 3rem;
