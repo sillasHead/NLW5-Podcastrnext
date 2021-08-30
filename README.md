@@ -10,7 +10,7 @@ Rode os comandos abaixo para obter esse repositório.
 
 ```bash
 > git clone https://github.com/sillasHead/nlw5-podcastrnext.git
-> cd nlw5-podcastrnext
+> cd podcastrnext-nlw5
 ```
 
 ## Execução
