@@ -1,4 +1,4 @@
-# Podicastr
+# Podcastr
 
 Projeto com fins educativos, instruído pelo professor Diego Fernandes por meio da quinta edição do Next Level Week, promovida pela equipe [Rocketseat](https://rocketseat.com.br/).
 
